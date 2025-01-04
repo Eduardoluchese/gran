@@ -930,6 +930,14 @@
         });
 
 
+    // evitar atraso ao clicar no mobile
+document.addEventListener("touchend", function (e) {
+  const button = e.target.closest(".mobile-button");
+  if (button) {
+    button.click(); // Disparar o evento de clique manualmente
+  }
+});
+
 
       /*************************************************************
 função que envia os dados de analytics antes de redirecionar
