@@ -856,30 +856,29 @@ função que envia os dados de analytics antes de redirecionar
         }
       }
       
-        /*************************************************************
- * 7) FUNÇÃO PARA CONFIGURAR BOTÕES COM DELAY
- *************************************************************/
-function setupDelayedButtons(section) {
-  const buttons = section.querySelectorAll(".mobile-button[data-delay]");
-  buttons.forEach((button) => {
-    // Inicialmente, esconder o botão e desabilitar interações
-    button.style.opacity = "0";
-    button.style.transition = "opacity 0.3s ease";
-    button.style.pointerEvents = "none"; // Desabilitar cliques e interações
+ /*************************************************************
+   * 7) FUNÇÃO PARA CONFIGURAR BOTÕES COM DELAY
+   *************************************************************/
+  function setupDelayedButtons(section) {
+    const buttons = section.querySelectorAll(".mobile-button[data-delay]");
+    buttons.forEach((button) => {
+      // Inicialmente, esconder o botão e desabilitar interações
+      button.style.opacity = "0";
+      button.style.transition = "opacity 0.3s ease";
+      button.style.pointerEvents = "none"; // Desabilitar cliques e interações
 
-    const delay = parseFloat(button.getAttribute("data-delay")) * 1000;
-    setTimeout(() => {
-      // Tornar o botão visível
-      button.style.opacity = "1";
-
-      // Habilitar interações após a transição de opacidade
-      // Considerando a duração da transição (0.3s), adicionamos um pequeno atraso
+      const delay = parseFloat(button.getAttribute("data-delay")); // Delay já em ms
       setTimeout(() => {
-        button.style.pointerEvents = "auto";
-      }, 300); // 300ms = duração da transição
-    }, delay);
-  });
-}
+        // Tornar o botão visível
+        button.style.opacity = "1";
+
+        // Habilitar interações após a transição de opacidade
+        setTimeout(() => {
+          button.style.pointerEvents = "auto";
+        }, 300); // 300ms = duração da transição
+      }, delay);
+    });
+  }
 
 
 
@@ -1075,22 +1074,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
       });
 
-      /*************************************************************
-       * 15) EVENTO DOMContentLoaded PARA CONFIGURAR BOTÕES COM DELAY
-       *************************************************************/
-      document.addEventListener("DOMContentLoaded", function () {
-        const delayedButtons = document.querySelectorAll(
-          ".mobile-button[data-delay]"
-        );
-        delayedButtons.forEach((button) => {
-          button.style.opacity = "0";
-          const delay = parseFloat(button.getAttribute("data-delay")) * 1000;
-          setTimeout(() => {
-            button.style.opacity = "1";
-            button.style.transition = "opacity 0.3s ease";
-          }, delay);
-        });
-      });
+
 
       /*************************************************************
        * 16) EVENTO DOMContentLoaded PARA CONFIGURAR MULTIPLE CHOICE E OBSERVER
