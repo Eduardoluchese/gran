@@ -1083,7 +1083,20 @@ function handleProgressCompletion(progressElement) {
 }
    
     
-    parseInt(progress.getAttribute("data-duration")) || 1;
+/*************************************************************
+       * 10) FUNÇÃO PARA ANIMAR BARRAS DE PROGRESSO
+       *************************************************************/
+      function animateProgressBars(section) {
+        const progressBars = section.querySelectorAll(".mobile-progress");
+        progressBars.forEach(function (progress) {
+          const progressBar = progress.querySelector(".progress-fill");
+          const progressValue = progress.querySelector(".progress-value");
+          const start = parseInt(progress.getAttribute("data-start")) || 0;
+          const end = parseInt(progress.getAttribute("data-end")) || 100;
+          const enableRedirect =
+            progress.getAttribute("data-enable-redirect") === "true";
+          const duration =
+            parseInt(progress.getAttribute("data-duration")) || 1;
           console.log(
             "Animating progress bar:",
             progress.id,
