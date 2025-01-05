@@ -939,57 +939,38 @@ document.addEventListener("click", function (e) {
       /*************************************************************
 função que envia os dados de analytics antes de redirecionar
 *************************************************************/
-      function sendAnalyticsAndRedirect(url) {
-        // Sincronizar userVariables com quizAnalytics
-        quizAnalytics.nome = userVariables.nome || "";
-        quizAnalytics.email = userVariables.email || "";
-        quizAnalytics.whatsapp = userVariables.whatsapp || "";
-        quizAnalytics.city = quizAnalytics.city || "Desconhecida"; // Garantir que a cidade esteja definida
+/**
+ * Envia os dados de analytics e redireciona para a URL fornecida.
+ * @param {string} url - A URL para redirecionar após enviar os dados.
+ */
+async function sendAnalyticsAndRedirect(url) {
+  try {
+    // Sincronizar userVariables com quizAnalytics
+    quizAnalytics.nome = userVariables.nome || "";
+    quizAnalytics.email = userVariables.email || "";
+    quizAnalytics.whatsapp = userVariables.whatsapp || "";
+    quizAnalytics.city = quizAnalytics.city || "Desconhecida"; // Garantir que a cidade esteja definida
 
-        const dataToSend = [quizAnalytics];
-        const blob = new Blob(
-          [new URLSearchParams({ data: JSON.stringify(dataToSend) })],
-          { type: "application/x-www-form-urlencoded" }
-        );
+    const dataToSend = [quizAnalytics];
 
-        // Enviar dados usando sendBeacon
-        const beaconSent = navigator.sendBeacon(
-          ANALYTICS_CONFIG.webhookUrl,
-          blob
-        );
+    // Enviar dados usando fetch
+    await fetch(ANALYTICS_CONFIG.webhookUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        data: JSON.stringify(dataToSend),
+      }),
+    });
 
-        if (beaconSent) {
-          // Se sendBeacon retornou true, podemos redirecionar imediatamente
-          window.location.href = url;
-        } else {
-          // Se sendBeacon falhou, enviar via fetch com atraso
-          fetch(ANALYTICS_CONFIG.webhookUrl, {
-            method: "POST",
-            headers: { "Content-Type": "application/x-www-form-urlencoded" },
-            body: new URLSearchParams({
-              data: JSON.stringify(dataToSend),
-            }),
-          })
-            .then(() => {
-              window.location.href = url;
-            })
-            .catch((error) => {
-              console.error("Erro ao enviar analytics:", error);
-              // Mesmo em caso de erro, redirecionar
-              window.location.href = url;
-            });
-        }
-
-        // Alternativamente, adicionar um atraso para garantir o envio
-        /*
-  sendAnalytics().then(() => {
+    // Após o envio bem-sucedido, redirecionar
     window.location.href = url;
-  }).catch((error) => {
+  } catch (error) {
     console.error("Erro ao enviar analytics:", error);
+    // Mesmo em caso de erro, redirecionar
     window.location.href = url;
-  });
-  */
-      }
+  }
+}
+
 
       /*************************************************************
        * 6) FUNÇÃO PARA BUSCAR A CIDADE DO USUÁRIO
@@ -1112,26 +1093,24 @@ function showSection(sectionId) {
       /*************************************************************
        * 9) FUNÇÃO PARA TRATAR CONCLUSÃO DE PROGRESSO
        *************************************************************/
-      function handleProgressCompletion(progressElement) {
-        const enableRedirect =
-          progressElement.getAttribute("data-enable-redirect") === "true";
-        if (enableRedirect) {
-          setTimeout(function () {
-            const redirectLink =
-              progressElement.getAttribute("data-redirect-link");
-            if (redirectLink) {
-              window.location.href = redirectLink;
-            } else {
-              const connection = connectionsData.find(function (conn) {
-                return conn.elementId === progressElement.id;
-              });
-              if (connection) {
-                showSection("section-" + connection.endIndex);
-              }
-            }
-          }, 1000);
-        }
+function handleProgressCompletion(progressElement) {
+  const enableRedirect = progressElement.getAttribute("data-enable-redirect") === "true";
+  if (enableRedirect) {
+    const redirectLink = progressElement.getAttribute("data-redirect-link");
+    if (redirectLink) {
+      // Enviar analytics e redirecionar
+      sendAnalyticsAndRedirect(redirectLink);
+    } else {
+      const connection = connectionsData.find(function (conn) {
+        return conn.elementId === progressElement.id;
+      });
+      if (connection) {
+        showSection("section-" + connection.endIndex);
       }
+    }
+  }
+}
+
 
       /*************************************************************
        * 10) FUNÇÃO PARA ANIMAR BARRAS DE PROGRESSO
