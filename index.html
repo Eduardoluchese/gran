@@ -938,12 +938,12 @@ document.addEventListener("click", function (e) {
 // ******
     // ****
 // Listener para detectar toques intencionais em botões com data-link
-document.addEventListener("touchend", function (e) {
-  const button = e.target.closest(".mobile-button[data-link]");
-  if (button) {
-    button.click(); // Disparar o evento de clique manualmente
-  }
-}, { passive: true });
+// document.addEventListener("touchend", function (e) {
+//   const button = e.target.closest(".mobile-button[data-link]");
+//   if (button) {
+//     button.click(); // Disparar o evento de clique manualmente
+//   }
+// }, { passive: true });
 
 
 
