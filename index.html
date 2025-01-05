@@ -906,19 +906,13 @@
 document.addEventListener("click", function (e) {
   const button = e.target.closest(".mobile-button"); // Identificar o botão clicado
   if (button) {
-    // Verificar se o botão está desabilitado
-    if (button.disabled || button.style.pointerEvents === "none") {
-      return; // Ignorar cliques em botões desabilitados ou não interativos
-    }
-
     const link = button.getAttribute("data-link");
     if (link) {
-      // Enviar analytics antes de redirecionar
-      quizAnalytics.endTime = Date.now(); // Registrar o tempo de término
-      sendAnalyticsAndRedirect(link);
-      return; // Evitar chamar showSection
+      quizAnalytics.endTime = Date.now();
+      sendAnalyticsAndRedirect(link); // Redireciona imediatamente
+      return;
     }
-
+    
     const buttonId = button.id;
     const connection = connectionsData.find(
       (conn) => conn.elementId === buttonId
@@ -1027,20 +1021,15 @@ função que envia os dados de analytics antes de redirecionar
 function setupDelayedButtons(section) {
   const buttons = section.querySelectorAll(".mobile-button[data-delay]");
   buttons.forEach((button) => {
-    // Inicialmente, esconder o botão e desabilitar interações
+    // Inicialmente, esconder o botão
     button.style.opacity = "0";
-    button.style.pointerEvents = "none"; // Desabilitar cliques e interações
-
-    const delayAttr = button.getAttribute("data-delay");
-    const delaySeconds = parseFloat(delayAttr);
-    const delay = isNaN(delaySeconds) ? 0 : delaySeconds * 1000; // Converter para milissegundos
-
+    
+    const delay = parseFloat(button.getAttribute("data-delay")) * 1000;
+    
     setTimeout(() => {
-      // Tornar o botão visível
+      // Tornar o botão visível e imediatamente clicável
       button.style.opacity = "1";
-
-      // Habilitar interações imediatamente após definir a opacidade
-      button.style.pointerEvents = "auto";
+      button.style.pointerEvents = "auto"; // Habilita cliques imediatamente
     }, delay);
   });
 }
