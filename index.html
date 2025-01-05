@@ -1112,26 +1112,24 @@ function showSection(sectionId) {
       /*************************************************************
        * 9) FUNÇÃO PARA TRATAR CONCLUSÃO DE PROGRESSO
        *************************************************************/
-      function handleProgressCompletion(progressElement) {
-        const enableRedirect =
-          progressElement.getAttribute("data-enable-redirect") === "true";
-        if (enableRedirect) {
-          setTimeout(function () {
-            const redirectLink =
-              progressElement.getAttribute("data-redirect-link");
-            if (redirectLink) {
-              window.location.href = redirectLink;
-            } else {
-              const connection = connectionsData.find(function (conn) {
-                return conn.elementId === progressElement.id;
-              });
-              if (connection) {
-                showSection("section-" + connection.endIndex);
-              }
-            }
-          }, 1000);
-        }
+function handleProgressCompletion(progressElement) {
+  const enableRedirect = progressElement.getAttribute("data-enable-redirect") === "true";
+  if (enableRedirect) {
+    const redirectLink = progressElement.getAttribute("data-redirect-link");
+    if (redirectLink) {
+      // Enviar analytics e redirecionar
+      sendAnalyticsAndRedirect(redirectLink);
+    } else {
+      const connection = connectionsData.find(function (conn) {
+        return conn.elementId === progressElement.id;
+      });
+      if (connection) {
+        showSection("section-" + connection.endIndex);
       }
+    }
+  }
+}
+
 
       /*************************************************************
        * 10) FUNÇÃO PARA ANIMAR BARRAS DE PROGRESSO
