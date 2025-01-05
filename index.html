@@ -914,7 +914,6 @@ document.addEventListener("click", function (e) {
     const link = button.getAttribute("data-link");
     if (link) {
       // Enviar analytics antes de redirecionar
-      quizAnalytics.endTime = Date.now(); // Registrar o tempo de término
       sendAnalyticsAndRedirect(link);
       return; // Evitar chamar showSection
     }
@@ -933,42 +932,15 @@ document.addEventListener("click", function (e) {
     }
   }
 });
-
-
-  /*************************************************************
-   *  FUNÇÃO sendAnalyticsAndRedirect
-   *************************************************************/
-  /**
-   * Envia os dados de analytics e redireciona para a URL fornecida.
-   * @param {string} url - A URL para redirecionar após enviar os dados.
-   */
-  async function sendAnalyticsAndRedirect(url) {
-    try {
-      // Sincronizar userVariables com quizAnalytics
-      quizAnalytics.nome = userVariables.nome || "";
-      quizAnalytics.email = userVariables.email || "";
-      quizAnalytics.whatsapp = userVariables.whatsapp || "";
-      quizAnalytics.city = quizAnalytics.city || "Desconhecida"; // Garantir que a cidade esteja definida
-
-      const dataToSend = [quizAnalytics];
-
-      // Enviar dados usando fetch
-      await fetch(ANALYTICS_CONFIG.webhookUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams({
-          data: JSON.stringify(dataToSend),
-        }),
-      });
-
-      // Após o envio bem-sucedido, redirecionar
-      window.location.href = url;
-    } catch (error) {
-      console.error("Erro ao enviar analytics:", error);
-      // Mesmo em caso de erro, redirecionar
-      window.location.href = url;
-    }
+/ Após o envio bem-sucedido, redirecionar
+    window.location.href = url;
+  } catch (error) {
+    console.error("Erro ao enviar analytics:", error);
+    // Mesmo em caso de erro, redirecionar
+    window.location.href = url;
   }
+}
+
 
 
       /*************************************************************
@@ -1092,24 +1064,26 @@ function showSection(sectionId) {
       /*************************************************************
        * 9) FUNÇÃO PARA TRATAR CONCLUSÃO DE PROGRESSO
        *************************************************************/
-
-  function handleProgressCompletion(progressElement) {
-    const enableRedirect = progressElement.getAttribute("data-enable-redirect") === "true";
-    if (enableRedirect) {
-      const redirectLink = progressElement.getAttribute("data-redirect-link");
-      if (redirectLink) {
-        // Enviar analytics e redirecionar
-        sendAnalyticsAndRedirect(redirectLink);
-      } else {
-        const connection = connectionsData.find(function (conn) {
-          return conn.elementId === progressElement.id;
-        });
-        if (connection) {
-          showSection("section-" + connection.endIndex);
-        }
+function handleProgressCompletion(progressElement) {
+  const enableRedirect = progressElement.getAttribute("data-enable-redirect") === "true";
+  if (enableRedirect) {
+    const redirectLink = progressElement.getAttribute("data-redirect-link");
+    if (redirectLink) {
+      // Enviar analytics e redirecionar
+      sendAnalyticsAndRedirect(redirectLink);
+    } else {
+      const connection = connectionsData.find(function (conn) {
+        return conn.elementId === progressElement.id;
+      });
+      if (connection) {
+        showSection("section-" + connection.endIndex);
       }
     }
-  }          parseInt(progress.getAttribute("data-duration")) || 1;
+  }
+}
+   
+    
+    parseInt(progress.getAttribute("data-duration")) || 1;
           console.log(
             "Animating progress bar:",
             progress.id,
