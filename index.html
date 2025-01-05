@@ -903,40 +903,40 @@
           /*************************************************************
          * 5) EVENTO DE CLIQUE PARA GRAVAR RESPOSTAS E NAVEGAR ENTRE SEÇÕES
          *************************************************************/
-        document.addEventListener("click", function (e) {
-          const button = e.target.closest(".mobile-button"); // Identificar o botão clicado
-          if (button) {
-            const link = button.getAttribute("data-link");
-            if (link) {
-              // Enviar analytics antes de redirecionar
-              quizAnalytics.endTime = Date.now(); // Registrar o tempo de término
-              sendAnalyticsAndRedirect(link);
-              return; // Evitar chamar showSection
-            }
-
-            const buttonId = button.id;
-            const connection = connectionsData.find(
-              (conn) => conn.elementId === buttonId
-            );
-            if (connection) {
-              // Registrar a resposta correspondente à seção
-              const sectionId = connection.startIndex;
-              const resposta = button.querySelector(".text").textContent;
-              quizAnalytics.responses["section_" + sectionId] = resposta;
-
-              showSection("section-" + connection.endIndex); // Mostrar a próxima seção
-            }
-          }
-        });
-
-
-    // evitar atraso ao clicar no mobile
-document.addEventListener("touchend", function (e) {
-  const button = e.target.closest(".mobile-button");
+document.addEventListener("click", function (e) {
+  const button = e.target.closest(".mobile-button"); // Identificar o botão clicado
   if (button) {
-    button.click(); // Disparar o evento de clique manualmente
+    // Verificar se o botão está desabilitado
+    if (button.disabled || button.style.pointerEvents === "none") {
+      return; // Ignorar cliques em botões desabilitados ou não interativos
+    }
+
+    const link = button.getAttribute("data-link");
+    if (link) {
+      // Enviar analytics antes de redirecionar
+      quizAnalytics.endTime = Date.now(); // Registrar o tempo de término
+      sendAnalyticsAndRedirect(link);
+      return; // Evitar chamar showSection
+    }
+
+    const buttonId = button.id;
+    const connection = connectionsData.find(
+      (conn) => conn.elementId === buttonId
+    );
+    if (connection) {
+      // Registrar a resposta correspondente à seção
+      const sectionId = connection.startIndex;
+      const resposta = button.querySelector(".text").textContent;
+      quizAnalytics.responses["section_" + sectionId] = resposta;
+
+      showSection("section-" + connection.endIndex); // Mostrar a próxima seção
+    }
   }
 });
+
+
+
+
 
 
       /*************************************************************
@@ -1027,27 +1027,27 @@ função que envia os dados de analytics antes de redirecionar
             /*************************************************************
        * 7) FUNÇÃO PARA CONFIGURAR BOTÕES COM DELAY
        *************************************************************/
-      function setupDelayedButtons(section) {
-        const buttons = section.querySelectorAll(".mobile-button[data-delay]");
-        buttons.forEach((button) => {
-          // Inicialmente, esconder o botão e desabilitar interações
-          button.style.opacity = "0";
-          // button.style.transition = "opacity 0.3s ease";
-          button.style.pointerEvents = "none"; // Desabilitar cliques e interações
+function setupDelayedButtons(section) {
+  const buttons = section.querySelectorAll(".mobile-button[data-delay]");
+  buttons.forEach((button) => {
+    // Inicialmente, esconder o botão e desabilitar interações
+    button.style.opacity = "0";
+    button.style.pointerEvents = "none"; // Desabilitar cliques e interações
 
-          const delay = parseFloat(button.getAttribute("data-delay")) * 1000;
-          setTimeout(() => {
-            // Tornar o botão visível
-            button.style.opacity = "1";
+    const delayAttr = button.getAttribute("data-delay");
+    const delaySeconds = parseFloat(delayAttr);
+    const delay = isNaN(delaySeconds) ? 0 : delaySeconds * 1000; // Converter para milissegundos
 
-            // Habilitar interações imediatamente após definir a opacidade
-            button.style.pointerEvents = "auto";
+    setTimeout(() => {
+      // Tornar o botão visível
+      button.style.opacity = "1";
 
-            // Opcional: Remover a transição se não for mais necessária
-            // button.style.transition = "";
-          }, delay);
-        });
-      }  
+      // Habilitar interações imediatamente após definir a opacidade
+      button.style.pointerEvents = "auto";
+    }, delay);
+  });
+}
+
 
 /*************************************************************
  * 8) FUNÇÃO PRINCIPAL PARA MOSTRAR UMA SEÇÃO
