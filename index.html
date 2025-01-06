@@ -995,7 +995,12 @@ function sendAnalyticsAndRedirect(url) {
     /*************************************************************
    * MAPEAMENTO DE NOMES DE ESTADOS PARA SUAS ABREVIAÇÕES
    *************************************************************/
-  const estadosBrasileiros = {
+ function normalizarNomeEstado(nomeEstado) {
+  return nomeEstado.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+}
+    
+    
+    const estadosBrasileiros = {
     "Acre": "AC",
     "Alagoas": "AL",
     "Amapá": "AP",
@@ -1041,6 +1046,10 @@ function sendAnalyticsAndRedirect(url) {
 
       const data = await response.json();
       console.log("Dados da API:", data);
+        // Dentro da função fetchUserCity
+const nomeEstadoNormalizado = normalizarNomeEstado(data.state);
+const estadoAbreviado = estadosBrasileiros[nomeEstadoNormalizado] || "";
+
 
       if (data && data.city && data.state) {
         const estadoAbreviado = estadosBrasileiros[data.state] || "";
