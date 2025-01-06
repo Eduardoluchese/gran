@@ -992,38 +992,79 @@ function sendAnalyticsAndRedirect(url) {
   */
 }
 
+    /*************************************************************
+   * MAPEAMENTO DE NOMES DE ESTADOS PARA SUAS ABREVIAÇÕES
+   *************************************************************/
+  const estadosBrasileiros = {
+    "Acre": "AC",
+    "Alagoas": "AL",
+    "Amapá": "AP",
+    "Amazonas": "AM",
+    "Bahia": "BA",
+    "Ceará": "CE",
+    "Distrito Federal": "DF",
+    "Espírito Santo": "ES",
+    "Goiás": "GO",
+    "Maranhão": "MA",
+    "Mato Grosso": "MT",
+    "Mato Grosso do Sul": "MS",
+    "Minas Gerais": "MG",
+    "Pará": "PA",
+    "Paraíba": "PB",
+    "Paraná": "PR",
+    "Pernambuco": "PE",
+    "Piauí": "PI",
+    "Rio de Janeiro": "RJ",
+    "Rio Grande do Norte": "RN",
+    "Rio Grande do Sul": "RS",
+    "Rondônia": "RO",
+    "Roraima": "RR",
+    "Santa Catarina": "SC",
+    "São Paulo": "SP",
+    "Sergipe": "SE",
+    "Tocantins": "TO"
+  };
 
+  /*************************************************************
+   * 6) FUNÇÃO PARA BUSCAR A CIDADE E ESTADO DO USUÁRIO
+   *************************************************************/
+  let cityFetched = false; // Flag para evitar múltiplas chamadas
 
+  async function fetchUserCity() {
+    if (cityFetched) return; // Evita múltiplas chamadas
+    cityFetched = true; // Marca que a cidade já foi buscada
 
-      /*************************************************************
-       * 6) FUNÇÃO PARA BUSCAR A CIDADE DO USUÁRIO
-       *************************************************************/
-      let cityFetched = false; // Flag para evitar múltiplas chamadas
+    console.log("Iniciando fetchUserCity...");
+    try {
+      const response = await fetch("https://geolocation-db.com/json/");
+      console.log("Resposta da API:", response);
 
-      async function fetchUserCity() {
-        if (cityFetched) return; // Evita múltiplas chamadas
-        cityFetched = true; // Marca que a cidade já foi buscada
+      const data = await response.json();
+      console.log("Dados da API:", data);
 
-        console.log("Iniciando fetchUserCity...");
-        try {
-          const response = await fetch("https://geolocation-db.com/json/");
-          console.log("Resposta da API:", response);
-
-          const data = await response.json();
-          console.log("Dados da API:", data);
-
-          if (data && data.city) {
-            quizAnalytics.city = data.city;
-            console.log("Cidade do usuário:", data.city);
-          } else {
-            console.error("Falha ao obter a cidade.");
-            quizAnalytics.city = "Desconhecida";
-          }
-        } catch (error) {
-          console.error("Erro ao buscar a cidade:", error);
-          quizAnalytics.city = "Desconhecida";
+      if (data && data.city && data.state) {
+        const estadoAbreviado = estadosBrasileiros[data.state] || "";
+        if (estadoAbreviado) {
+          quizAnalytics.city = `${data.city} - ${estadoAbreviado}`;
+        } else {
+          // Caso a abreviação não seja encontrada, apenas a cidade
+          quizAnalytics.city = data.city;
+          console.warn(`Abreviação do estado "${data.state}" não encontrada.`);
         }
+        console.log("Cidade e Estado do usuário:", quizAnalytics.city);
+      } else if (data && data.city) {
+        // Se apenas a cidade for encontrada
+        quizAnalytics.city = data.city;
+        console.warn("Estado não encontrado na resposta da API.");
+      } else {
+        console.error("Falha ao obter a cidade e estado.");
+        quizAnalytics.city = "Desconhecida";
       }
+    } catch (error) {
+      console.error("Erro ao buscar a cidade e estado:", error);
+      quizAnalytics.city = "Desconhecida";
+    }
+  }
 
                      /*************************************************************
        * 7) FUNÇÃO PARA CONFIGURAR BOTÕES COM DELAY
