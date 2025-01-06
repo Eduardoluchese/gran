@@ -1137,7 +1137,7 @@ function showSection(sectionId) {
     initializeGalleries(targetSection); // Inicializar galerias na seção
 
     // Buscar a cidade do usuário
-    fetchUserCity();
+    fetchUserLocation();
 
     // Atualizar furthestSection se necessário
     const indexNow = parseInt(sectionId.split("-")[1]) || 0;
