@@ -1090,6 +1090,8 @@ function setupDelayedButtons(section) {
  * 8) FUNÇÃO PRINCIPAL PARA MOSTRAR UMA SEÇÃO
  *************************************************************/
 function showSection(sectionId) {
+      pauseAllVideos(); 
+
   console.log("Showing section:", sectionId);
 
   // Remover 'active' de todas as seções e parar autoplay de galerias
@@ -1770,9 +1772,16 @@ document.addEventListener("DOMContentLoaded", function () {
         });
       });
 
-      /*************************************************************
-       * 21) FUNÇÃO PARA INICIALIZAR TODAS AS GALERIAS
+        /*************************************************************
+       * 21) FUNÇÃO PARA pausar videos apos sair da cessao 
        *************************************************************/
+    
+function pauseAllVideos() {
+  videoPlayers.forEach(player => {
+    player.pauseVideo();
+  });
+}
+  
       // Já definida anteriormente como initializeGalleries
 
       /*************************************************************
